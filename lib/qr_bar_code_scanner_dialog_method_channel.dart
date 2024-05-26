@@ -22,32 +22,37 @@ class MethodChannelQrBarCodeScannerDialog
   }
 
   @override
-  void scanBarOrQrCode(
-      {BuildContext? context, required Function(String? code) onScanSuccess}) {
+  void scanBarOrQrCode({
+    BuildContext? context,
+    required Function(String? code) onScanSuccess,
+  }) {
     /// context is required to show alert in non-web platforms
     assert(context != null);
 
     showDialog(
-        context: context!,
-        builder: (context) => Container(
-              alignment: Alignment.center,
-              child: Container(
-                height: 400,
-                width: 600,
-                margin: const EdgeInsets.all(20),
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ScannerWidget(onScanSuccess: (code) {
-                  if (code != null) {
-                    Navigator.pop(context);
-                    onScanSuccess(code);
-                  }
-                }),
-              ),
-            ));
+      context: context!,
+      builder: (context) => Container(
+        alignment: Alignment.center,
+        child: Container(
+          height: 400,
+          width: 600,
+          margin: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ScannerWidget(
+            onScanSuccess: (code) {
+              if (code != null) {
+                Navigator.pop(context);
+                onScanSuccess(code);
+              }
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -78,7 +83,6 @@ class _ScannerWidgetState extends State<ScannerWidget> {
 
   @override
   void dispose() {
-    /// dispose the controller
     controller?.dispose();
     super.dispose();
   }
@@ -94,33 +98,34 @@ class _ScannerWidgetState extends State<ScannerWidget> {
             child: _buildQrView(context),
           ),
         ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text("Stop scanning"),
+        const SizedBox(height: 8),
+        IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.close_outlined),
         ),
+        const SizedBox(height: 8),
       ],
     );
   }
 
   Widget _buildQrView(BuildContext context) {
     double smallestDimension = min(
-        MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
-
+      MediaQuery.of(context).size.width,
+      MediaQuery.of(context).size.height,
+    );
     smallestDimension = min(smallestDimension, 550);
-
     return QRView(
       key: qrKey,
       onQRViewCreated: (controller) {
         _onQRViewCreated(controller);
       },
       overlay: QrScannerOverlayShape(
-          borderColor: Colors.black,
-          borderRadius: 10,
-          borderLength: 30,
-          borderWidth: 10,
-          cutOutSize: smallestDimension - 140),
+        borderColor: Colors.grey,
+        borderRadius: 12,
+        borderLength: 24,
+        borderWidth: 8,
+        cutOutSize: smallestDimension - 140,
+      ),
     );
   }
 
